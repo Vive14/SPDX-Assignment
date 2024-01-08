@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+    api-dev:
+        build: ./Flask-API-MYSQL
+        image: sdpx/api
+        container_name: api-dev
+        ports:
+            - "8081:5000"
+        links:
+            - dev-mysql
+        depends_on:
+            - dev-mysql
+        environment:
+            MYSQL_HOST: dev-mysql
+            MYSQL_USER: root
+            MYSQL_PASSWORD: cisco1234
+            MYSQL_DB: db_dev
+
+    api-test:
+        image: sdpx/api
+        container_name: api-test
+        ports:
+            - "8082:5000"
+        links:
+            - test-mysql
+        depends_on:
+            - test-mysql
+        environment:
+            MYSQL_HOST: test-mysql
+            MYSQL_USER: root
+            MYSQL_PASSWORD: cisco1234
+            MYSQL_DB: db_test
+
+    dev-mysql:
+        image: mysql:5.7
+        container_name: db-dev
+        ports:
+            - "6000:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: cisco1234
+            MYSQL_DATABASE: db_dev
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: db4dev$
+        volumes:
+            - ./db_dev/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - ./db_dev/dev_data:/lib/var/mysql
+
+    test-mysql:
+        image: mysql:5.7
+        container_name: db-test
+        ports:
+            - "6001:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: cisco1234
+            MYSQL_DATABASE: db_test
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: db4test$
+        volumes:
+            - ./db_test/init.sql:/docker-entrypoint-initdb.d/init.sql
+            - ./db_test/test_data:/lib/var/mysql

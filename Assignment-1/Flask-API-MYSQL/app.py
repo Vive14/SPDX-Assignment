@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # MySQL configuration
 app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST', 'db')
-app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'root')
+app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'password')
 app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'MYSQL_DATABASE')
 
@@ -16,7 +16,7 @@ mysql = MySQL(app)
 @app.route('/users', methods=['GET'])
 def get_users():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM users')
+    cur.execute('SELECT * FROM Users')
     users = cur.fetchall()
     cur.close()
     return jsonify({'users': users})
@@ -24,7 +24,7 @@ def get_users():
 @app.route('/users/<int:uid>', methods=['GET'])
 def get_user(uid):
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM users WHERE id = %s', (uid,))
+    cur.execute('SELECT * FROM Users WHERE uid = %s', (uid,))
     user = cur.fetchone()
     cur.close()
     if user:
@@ -38,7 +38,7 @@ def create_user():
     name = data['name']
     age = data['age']
     cur = mysql.connection.cursor()
-    cur.execute('INSERT INTO users (name, age) VALUES (%s, %s)', (name, age))
+    cur.execute('INSERT INTO Users (Fname, age) VALUES (%s, %s)', (name, age))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'User created successfully'}), 201
@@ -49,7 +49,7 @@ def update_user(uid):
     name = data['name']
     age = data['age']
     cur = mysql.connection.cursor()
-    cur.execute('UPDATE users SET name=%s, age=%s WHERE id=%s', (name, age, uid))
+    cur.execute('UPDATE Users SET Fname=%s, age=%s WHERE uid=%s', (name, age, uid))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'User created successfully'}), 201
@@ -57,10 +57,10 @@ def update_user(uid):
 @app.route('/users/<int:uid>', methods=['DELETE'])
 def delete_user(uid):
     cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM users WHERE id=%s', (uid,))
+    cur.execute('DELETE FROM Users WHERE uid=%s', (uid,))
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'User deleted successfully'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=os.environ.get('POST'))
+    app.run(debug=True, host='0.0.0.0', port='5000')
